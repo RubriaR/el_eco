@@ -8,6 +8,8 @@
 ## Description
 *El eco*, part of the *Memoria* series, is an interactive digital poem that explores the intersection of the migrant experience and the lived grief of caring for a loved one with Alzheimer’s disease. Through a kinetic and responsive interface, the work visualizes the struggle of memory and presence. As the user interacts with the text, the words evade the cursor, mirroring the elusive nature of a fading memory, while the cyclic nature of the poem captures the relentless, daily repetition of caregiving. It is a digital archive of a daughter’s return and the persistent effort to anchor a parent in a reality that is constantly slipping away.
 
+👉 **View the project:** https://rubriar.github.io/el_eco/
+
 ## Artistic Statement
 *El eco* utilizes the instability of digital text to mirror the fragility of the human mind under the weight of dementia. By making the words physically "flee" from the viewer’s touch, the interface subverts the act of reading, transforming it into a futile, repetitive attempt to hold onto something that cannot be fully grasped.
 
