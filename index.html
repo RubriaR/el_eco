@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El eco</title>
+    <style>
+        /* Estilos generales y fondo responsivo */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: url('nosotras1.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Georgia', serif;
+            color: #ffffff;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Capa oscura (con pointer-events en none para no bloquear el mouse) */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 1;
+            pointer-events: none; 
+        }
+
+        /* Contenedor principal de la obra */
+        .content {
+            position: relative;
+            z-index: 2;
+            max-width: 1000px; /* Un poco más ancho para las dos columnas */
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+
+        h1:hover {
+            color: #e0e0e0;
+            text-shadow: 0 0 15px rgba(255,255,255,0.8);
+        }
+
+        .instruccion {
+            font-size: 1rem;
+            font-style: italic;
+            opacity: 0.8;
+            margin-bottom: 30px;
+            cursor: pointer;
+        }
+
+        /* Ajustes para el texto: Letra más pequeña y 2 columnas */
+        #poema {
+            text-align: left;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            column-count: 2;
+            column-gap: 50px;
+            padding-bottom: 40px;
+            flex-grow: 1;
+        }
+
+        /* Cada palabra es un elemento individual que reacciona */
+        .palabra {
+            display: inline-block;
+            transition: transform 0.3s ease-out; /* Regreso suave al lugar de origen */
+            margin-right: 5px;
+            cursor: default;
+        }
+
+        footer {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.6);
+            letter-spacing: 1px;
+        }
+
+        /* Para pantallas de teléfonos móviles: volvemos a una columna */
+        @media (max-width: 768px) {
+            #poema {
+                column-count: 1;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Audio -->
+    <audio id="musicaFondo" src="musica1.mp3" loop preload="auto"></audio>
+    
+    <div class="overlay"></div>
+    
+    <div class="content">
+        <h1 id="titulo">El eco</h1>
+        <div id="instruccion" class="instruccion">(Haz clic en el título para comenzar)</div>
+        <div id="poema"></div>
+    </div>
+    
+    <footer>&copy; Rubria Rocha de Luna, 2026</footer>
+
+    <script>
+        const textoPoema = 
+            "Traía aún el frío y la nieve en la maleta\n" +
+            "y encontraba un tribunal de voces ásperas,\n" +
+            "era un reclamo invisible que esperaba mi derrota.\n" +
+            "como castigo sublime por mi ausencia que me agota.\n" +
+            "Tan pronto se olvidaban del camino que ya habíamos cruzado,\n" +
+            "del tejido invisible que sostuvimos solas en el pasado.\n\n" +
+            "¿Ya pagamos la luz? Me preguntabas\n" +
+            "Sí, acabamos de ir a pagarla, mami, te respondía.\n" +
+            "En los rincones del miedo desaparecían tus llaves\n" +
+            "y yo las buscaba contigo para calmar tus deslaves.\n" +
+            "La sal y las especias de tu cocina perdieron su armonía,\n" +
+            "Yo sazonaba con tus recuerdos, pero eso ya no sabía.\n" +
+            "Regábamos el jardín, moldeábamos la plastilina y repasábamos las fotos,\n" +
+            "aunque el día se repetía y se repetía.\n" +
+            "¿Ya pagamos la luz? Me preguntabas de nuevo.\n" +
+            "Sí, acabamos de ir a pagarla, mami, te respondía.\n" +
+            "Y las llaves se perdían, las recetas cambiaban y las plantas crecían.\n" +
+            "Eso nos mantuvo unidas por días y más días.\n\n" +
+            "Por eso mi regreso no fue el castigo que auguraban;\n" +
+            "Aunque ya no me recordabas, conmigo segura estabas.\n\n" +
+            "Ahora ordenabas tu mente con páginas de la sección amarilla,\n" +
+            "Esperando impaciente a tu madre como si fueras una chiquilla.\n" +
+            "Nuestra historia es un hilo que nadie pudo cortar,\n" +
+            "pero volver al norte me dolía con intensidad.\n" +
+            "Un duelo en vida frente a los recuerdos que se apagan,\n" +
+            "desprenderme de ti y de la parte de mí que te llevabas.";
+
+        const elementos = [];
+        const lineas = textoPoema.split('\n');
+        lineas.forEach((linea, index) => {
+            const palabras = linea.split(' ');
+            palabras.forEach(palabra => {
+                if (palabra.trim() !== '') {
+                    elementos.push({ tipo: 'palabra', texto: palabra });
+                }
+            });
+            if (index < lineas.length - 1) {
+                elementos.push({ tipo: 'salto' });
+            }
+        });
+
+        const contenedorPoema = document.getElementById('poema');
+        const titulo = document.getElementById('titulo');
+        const audio = document.getElementById('musicaFondo');
+        const instruccion = document.getElementById('instruccion');
+        
+        let indiceActual = 0;
+        let interactivo = false; // Comienza falso hasta que se hace clic
+        let terminado = false;
+        let intervaloEscritura;
+
+        // Disparador principal (Inicio o Reinicio)
+        document.addEventListener('click', (e) => {
+            // Iniciar por primera vez si se hace clic en el título
+            if (indiceActual === 0 && e.target.id === 'titulo') {
+                iniciarObra();
+            } 
+            // Reiniciar la obra si ya terminó
+            else if (terminado) {
+                reiniciarObra();
+            }
+        });
+
+        function iniciarObra() {
+            let playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => console.log("Permisos de audio requeridos", error));
+            }
+
+            instruccion.style.transition = "opacity 0.5s";
+            instruccion.style.opacity = "0";
+            setTimeout(() => instruccion.style.display = 'none', 500);
+            
+            interactivo = true;
+            escribirPoema();
+        }
+
+        function reiniciarObra() {
+            contenedorPoema.innerHTML = '';
+            indiceActual = 0;
+            terminado = false;
+            interactivo = true;
+            
+            instruccion.style.opacity = "0";
+            setTimeout(() => {
+                instruccion.style.display = 'none';
+                escribirPoema();
+            }, 300);
+        }
+
+        function escribirPoema() {
+            intervaloEscritura = setInterval(() => {
+                // Cuando termina el poema
+                if (indiceActual >= elementos.length) {
+                    clearInterval(intervaloEscritura);
+                    interactivo = false; 
+                    terminado = true;
+                    restaurarPalabras(); 
+                    
+                    // Mostrar mensaje de reinicio
+                    setTimeout(() => {
+                        instruccion.textContent = "(Haz clic en cualquier parte para reiniciar)";
+                        instruccion.style.display = 'block';
+                        // Forzar el reflow para que la transición funcione
+                        void instruccion.offsetWidth; 
+                        instruccion.style.opacity = "0.8";
+                    }, 1000);
+                    return;
+                }
+
+                const el = elementos[indiceActual];
+                if (el.tipo === 'palabra') {
+                    const span = document.createElement('span');
+                    span.className = 'palabra';
+                    span.textContent = el.texto;
+                    contenedorPoema.appendChild(span);
+                    contenedorPoema.appendChild(document.createTextNode(' ')); 
+                } else if (el.tipo === 'salto') {
+                    contenedorPoema.appendChild(document.createElement('br'));
+                }
+                
+                indiceActual++;
+            }, 300); // Velocidad: 300ms por palabra
+        }
+
+        // Lógica mejorada del movimiento del ratón
+        document.addEventListener('mousemove', (e) => {
+            if (!interactivo) return; 
+
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            
+            const spans = document.querySelectorAll('.palabra');
+            spans.forEach(span => {
+                const rect = span.getBoundingClientRect();
+                const centroX = rect.left + rect.width / 2;
+                const centroY = rect.top + rect.height / 2;
+                
+                const distX = mouseX - centroX;
+                const distY = mouseY - centroY;
+                const distancia = Math.sqrt(distX * distX + distY * distY);
+
+                const radioHabilitado = 120; // Aumentado el rango de detección del cursor
+
+                if (distancia < radioHabilitado) {
+                    const fuerza = (radioHabilitado - distancia) / radioHabilitado;
+                    const empujeX = -(distX / distancia) * fuerza * 60; // Aumentada la distancia de vuelo
+                    const empujeY = -(distY / distancia) * fuerza * 60;
+                    
+                    span.style.transform = "translate(" + empujeX + "px, " + empujeY + "px)";
+                } else {
+                    span.style.transform = "translate(0px, 0px)";
+                }
+            });
+        });
+
+        function restaurarPalabras() {
+            const spans = document.querySelectorAll('.palabra');
+            spans.forEach(span => {
+                span.style.transform = "translate(0px, 0px)";
+            });
+        }
+    </script>
+</body>
+</html>
