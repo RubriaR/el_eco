@@ -16,6 +16,9 @@
 The piece positions the screen as a site of mourning and resistance; it documents the tension between geographic distance—the "north"—and the intimate, domestic space of the memory-eroded kitchen. Through code, the work transforms the personal archive of a mother-daughter relationship into a space where, despite the inevitable erasure, the history remains inscribed in the digital fabric.
 
 ## Credits
+
+Developed for the course La máquina creadora, led by professor Iván Vergara García, Universidad de Salamanca.
+
 **Concept, Code, and Visual Design:** Rubria Rocha de Luna (with Gemini Pro AI Code Assistance)
 
 **Images:** Edited from personal archives via ChatGPT, 2026
