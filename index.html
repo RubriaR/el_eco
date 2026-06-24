@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El eco</title>
+    <title>Memoria - El eco</title>
     <style>
         /* Estilos generales y fondo responsivo */
         body, html {
@@ -32,7 +32,7 @@
         .content {
             position: relative;
             z-index: 2;
-            max-width: 1000px; /* Un poco más ancho para las dos columnas */
+            max-width: 1300px; /* Un poco más ancho para las dos columnas */
             margin: 0 auto;
             padding: 40px 20px;
             text-align: center;
@@ -83,11 +83,23 @@
         footer {
             position: relative;
             z-index: 2;
-            text-align: center;
-            padding: 15px;
+            display: flex;
+            justify-content: space-between; /* Esto reparte los elementos */
+            align-items: center;
+            padding: 15px 30px;
             font-size: 0.9rem;
             background: rgba(0,0,0,0.6);
             letter-spacing: 1px;
+        }
+
+        footer a {
+            color: #ffffff;
+            text-decoration: underline;
+            transition: opacity 0.3s;
+        }
+
+        footer a:hover {
+            opacity: 0.7;
         }
 
         /* Para pantallas de teléfonos móviles: volvemos a una columna */
@@ -112,7 +124,10 @@
         <div id="poema"></div>
     </div>
     
-    <footer>&copy; Rubria Rocha de Luna, 2026</footer>
+    <footer>
+        <span>&copy; Rubria Rocha de Luna, 2026</span>
+        <a href="https://sites.google.com/view/migrarte/latido?authuser=0" target="_blank">Latido</a>
+    </footer>
 
     <script>
         const textoPoema = 
